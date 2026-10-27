@@ -1,30 +1,61 @@
-﻿// ──────────────────────────────────────────────────────────────────────────────
-// Card.tsx — Demonstrates: TypeScript interfaces for props, optional props,
-//            and React.FC type annotation
-// ──────────────────────────────────────────────────────────────────────────────
+// Card component demonstrating typed props and optional callbacks
 
-import React from 'react'
+import type { FC } from 'react'
 
-// 1️⃣  Define a TypeScript interface for the component's props
-interface CardProps {
-  title: string           // required
-  description: string     // required
-  badge?: string          // optional  (note the `?`)
-  onClick?: () => void    // optional callback — typed as a function returning void
+export interface CardProps {
+  title: string
+  description: string
+  badge?: string
+  category?: string
+  codeSnippet?: string
+  onClick?: () => void
 }
 
-// 2️⃣  React.FC<CardProps> tells TypeScript exactly what props this component accepts
-const Card: React.FC<CardProps> = ({ title, description, badge, onClick }) => {
+export const Card: FC<CardProps> = ({
+  title,
+  description,
+  badge,
+  category = 'TypeScript Interface',
+  codeSnippet,
+  onClick,
+}) => {
   return (
-    <div className="ts-card" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
-      {/* Conditional rendering — badge is only shown when it exists */}
-      {badge && <span className="ts-badge">{badge}</span>}
+    <div
+      className={`ts-card ai-glass-card ${onClick ? 'ts-card-interactive' : ''}`}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={e => {
+        if (onClick && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick()
+        }
+      }}
+    >
+      {/* Top accent highlight */}
+      <div className="ai-card-glow-bar" />
+
+      <div className="ts-card-header">
+        <span className="ai-card-category">{category}</span>
+        {badge && <span className="ts-badge ai-badge-glow">{badge}</span>}
+      </div>
+
       <h3 className="ts-card-title">{title}</h3>
       <p className="ts-card-desc">{description}</p>
+
+      {codeSnippet && (
+        <div className="ai-code-mini">
+          <code>{codeSnippet}</code>
+        </div>
+      )}
+
       {onClick && (
-        <button className="ts-btn" type="button">
-          Click me →
-        </button>
+        <div className="ts-card-action">
+          <button className="ts-btn ts-btn-sm ai-interactive-btn" type="button">
+            <span>Execute Action</span>
+            <span className="ai-arrow-icon">→</span>
+          </button>
+        </div>
       )}
     </div>
   )
